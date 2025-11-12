@@ -1,14 +1,19 @@
 import { getGitHubUsers } from "@/hooks/get-github-users";
 
 import { Image } from "expo-image";
-import { useState } from "react";
+import {  useState } from "react";
 import {
   ColorSchemeName,
+
+  Platform,
+
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   useColorScheme,
+  useWindowDimensions,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -23,6 +28,16 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [users, setUsers] = useState<GitHubUserItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  
+
+  const {width} = useWindowDimensions()
+
+  // useEffect(() => {
+  //   const subscription = Dimensions.addEventListener('change', ({ window }) => {
+  //     console.log('Orientation changed:', window);
+  //   });
+  //   return () => subscription?.remove();
+  // }, []);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
@@ -40,6 +55,7 @@ export default function Home() {
   };
 
   return (
+    <>
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>GitHub Users Search</Text>
       <Image 
@@ -55,7 +71,12 @@ export default function Home() {
         onSubmitEditing={handleSearch}
       />
       <Button content={isLoading ? "Searching..." : "Search"} onPress={handleSearch} />
-      
+      <View style={{
+        ...styles.box,
+        width: width * 0.9,
+        aspectRatio: 1,
+        
+        }}></View>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         {users.length > 0 ? (
           users.map((user) => (
@@ -68,6 +89,9 @@ export default function Home() {
         )}
       </ScrollView>
     </SafeAreaView>
+    
+    </>
+
   );
 }
 
@@ -77,7 +101,7 @@ const getStyles = (theme: ColorSchemeName) =>
       flex: 1,
       paddingHorizontal: 20,
       gap: 10,
-      backgroundColor: theme === "dark" ? "#000" : "#fff"
+      backgroundColor: theme === "dark" ? "#000" : "#fff",
     },
     title: {
       fontSize: 24,
@@ -123,4 +147,9 @@ const getStyles = (theme: ColorSchemeName) =>
       gap: 15,
       paddingBottom: 20,
     },
+    box: {
+      flex: 1,
+      backgroundColor: Platform.OS === "ios" ? "red" : "blue",
+      textAlign: "center",
+    }
   });
