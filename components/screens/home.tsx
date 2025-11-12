@@ -20,6 +20,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import UserCard from "../ui/user-card";
 import { GitHubUserItem } from "../../types/user-types";
 import Button from "../ui/button";
+import { layoutTheme } from "@/constants/theme";
+
 
 
 export default function Home() {
@@ -28,16 +30,10 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [users, setUsers] = useState<GitHubUserItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  
-
   const {width} = useWindowDimensions()
 
-  // useEffect(() => {
-  //   const subscription = Dimensions.addEventListener('change', ({ window }) => {
-  //     console.log('Orientation changed:', window);
-  //   });
-  //   return () => subscription?.remove();
-  // }, []);
+ 
+  
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
@@ -76,7 +72,9 @@ export default function Home() {
         width: width * 0.9,
         aspectRatio: 1,
         
-        }}></View>
+        }}>
+          <Text style={styles.boxText}>Hello</Text>
+        </View>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         {users.length > 0 ? (
           users.map((user) => (
@@ -151,5 +149,13 @@ const getStyles = (theme: ColorSchemeName) =>
       flex: 1,
       backgroundColor: Platform.OS === "ios" ? "red" : "blue",
       textAlign: "center",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    boxText: {
+      fontFamily: layoutTheme.fonts.montserrat.regular as string,
+      fontSize: 20,
+      color: theme === "dark" ? "#fff" : "#000",
     }
+
   });
