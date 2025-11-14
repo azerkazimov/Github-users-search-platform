@@ -1,43 +1,34 @@
 import { getGitHubUsers } from "@/hooks/get-github-users";
 
 import { Image } from "expo-image";
-import {  useState } from "react";
+import { useState } from "react";
 import {
-  ColorSchemeName,
-
-  Platform,
-
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  useColorScheme,
-  useWindowDimensions,
-  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import UserCard from "../ui/user-card";
-import { GitHubUserItem } from "../../types/user-types";
-import Button from "../ui/button";
 import { layoutTheme } from "@/constants/theme";
+import { useColorScheme } from "@/context/theme-provider";
 
-
+import { GitHubUserItem } from "../../types/user-types";
+import UserCard from "../ui/user-card";
+import Button from "../ui/button";
 
 export default function Home() {
-  let colorScheme = useColorScheme();
-  let styles = getStyles(colorScheme);
+  const colorScheme = useColorScheme();
+  const styles = getStyles(colorScheme);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [users, setUsers] = useState<GitHubUserItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const {width} = useWindowDimensions()
-
- 
-  
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
-    
+
     setIsLoading(true);
     try {
       const data = await getGitHubUsers(searchQuery);
@@ -52,48 +43,37 @@ export default function Home() {
 
   return (
     <>
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>GitHub Users Search</Text>
-      <Image 
-        source={require("../../assets/images/github-icon.png")} 
-        style={styles.image} 
-      />
-      <TextInput 
-        style={styles.input} 
-        placeholder="Search for users" 
-        placeholderTextColor={colorScheme === "dark" ? "#888" : "#666"}
-        value={searchQuery} 
-        onChangeText={setSearchQuery}
-        onSubmitEditing={handleSearch}
-      />
-      <Button content={isLoading ? "Searching..." : "Search"} onPress={handleSearch} />
-      <View style={{
-        ...styles.box,
-        width: width * 0.9,
-        aspectRatio: 1,
-        
-        }}>
-          <Text style={styles.boxText}>Hello</Text>
-        </View>
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-        {users.length > 0 ? (
-          users.map((user) => (
-            <UserCard key={user.id} user={user} />
-          ))
-        ) : (
-          !isLoading && searchQuery && (
-            <Text style={styles.text}>No users found</Text>
-          )
-        )}
-      </ScrollView>
-    </SafeAreaView>
-    
-    </>
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.title}>GitHub Users Search</Text>
+        <Image
+          source={require("../../assets/images/github-icon.png")}
+          style={styles.image}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Search for users"
+          placeholderTextColor={colorScheme === "dark" ? "#888" : "#666"}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          onSubmitEditing={handleSearch}
+        />
+        <Button content={isLoading ? "Searching..." : "Search"} onPress={handleSearch} />
 
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+        >
+          {users.length > 0
+            ? users.map((user) => <UserCard key={user.id} user={user} />)
+            : !isLoading &&
+              searchQuery && <Text style={styles.text}>No users found</Text>}
+        </ScrollView>
+      </SafeAreaView>
+    </>
   );
 }
 
-const getStyles = (theme: ColorSchemeName) =>
+const getStyles = (theme: "light" | "dark") =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -145,17 +125,28 @@ const getStyles = (theme: ColorSchemeName) =>
       gap: 15,
       paddingBottom: 20,
     },
-    box: {
-      flex: 1,
-      backgroundColor: Platform.OS === "ios" ? "red" : "blue",
-      textAlign: "center",
-      justifyContent: "center",
-      alignItems: "center",
-    },
+
     boxText: {
       fontFamily: layoutTheme.fonts.montserrat.regular as string,
       fontSize: 20,
       color: theme === "dark" ? "#fff" : "#000",
-    }
-
+    },
+    button: {
+      padding: 10,
+      borderRadius: 5,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor:
+        theme === "dark"
+          ? layoutTheme.colors.background.secondary
+          : layoutTheme.colors.background.dark,
+    },
+    buttonText: {
+      color:
+        theme === "dark"
+          ? layoutTheme.colors.text.primary
+          : layoutTheme.colors.text.inverse,
+      fontSize: 16,
+      fontWeight: "bold",
+    },
   });

@@ -1,23 +1,24 @@
+import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { Link, router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-  ColorSchemeName,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  useColorScheme,
-  View
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "../../../components/ui/button";
+import { useColorScheme } from "../../../context/theme-provider";
 import { getGitHubUsers } from "../../../hooks/get-github-users";
 import { GitHubSearchResponse } from "../../../types/user-types";
 
 export default function Users() {
   const { username } = useLocalSearchParams();
-  let colorScheme = useColorScheme();
-  let styles = getStyles(colorScheme);
+  const colorScheme = useColorScheme();
+  const styles = getStyles(colorScheme);
   const [userData, setUserData] = useState<GitHubSearchResponse | null>(null);
 
   useEffect(() => {
@@ -28,25 +29,43 @@ export default function Users() {
     fetchUser();
   }, [username]);
 
- const handleReturnToHome = () => {
-  router.push("/");
- };
+  const handleReturnToHome = () => {
+    router.push("/");
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
+        <Pressable onPress={()=>router.back()}>
+          <Text style={styles.link}>
+            <Ionicons name="arrow-back" size={24} color={colorScheme === "dark" ? "#fff" : "#000"} />
+          </Text>
+        </Pressable>
 
-            <Link href="/"><Text style={styles.link}>Home</Text></Link>
-
-      <Text style={styles.text}>GitHub Users </Text>
+        <Text style={styles.text}>GitHub Users </Text>
       </View>
-      <Image source={userData?.items[0]?.avatar_url && { uri: userData.items[0].avatar_url } } style={styles.image} />
+      <Image
+        source={
+          userData?.items[0]?.avatar_url && {
+            uri: userData.items[0].avatar_url,
+          }
+        }
+        style={styles.image}
+      />
       {userData && (
         <ScrollView>
           <View style={styles.container}>
-              {username && <Text style={styles.text}>{userData?.items[0]?.login}</Text>}
-            <Text style={styles.text} numberOfLines={2}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Illum, alias consequuntur ullam laborum, maiores ipsum illo, quaerat quis ipsa debitis impedit dignissimos animi aliquam minima doloremque necessitatibus ea odit? Sed?</Text>
-            <Button content="Search" onPress={handleReturnToHome} />
+            {username && (
+              <Text style={styles.text}>{userData?.items[0]?.login}</Text>
+            )}
+            <Text style={styles.text} numberOfLines={2}>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+              quos. Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+              Illum, alias consequuntur ullam laborum, maiores ipsum illo,
+              quaerat quis ipsa debitis impedit dignissimos animi aliquam minima
+              doloremque necessitatibus ea odit? Sed?
+            </Text>
+            <Button content="Contunie Searching" onPress={handleReturnToHome} />
           </View>
         </ScrollView>
       )}
@@ -54,18 +73,18 @@ export default function Users() {
   );
 }
 
-const getStyles = (theme: ColorSchemeName) =>
+const getStyles = (theme: "light" | "dark") =>
   StyleSheet.create({
     container: {
       flex: 1,
       paddingHorizontal: 20,
       gap: 10,
-      backgroundColor: theme === "dark" ? "#000" : "#fff"
+      backgroundColor: theme === "dark" ? "#000" : "#fff",
     },
     text: {
       fontSize: 20,
       fontWeight: "bold",
-      color: theme === "dark" ? "#fff" : "#000"
+      color: theme === "dark" ? "#fff" : "#000",
     },
     image: {
       width: 100,

@@ -1,17 +1,18 @@
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import {
-  ColorSchemeName,
   StyleSheet,
   Text,
-  useColorScheme,
+  useWindowDimensions,
   View,
 } from "react-native";
+import { useColorScheme } from "../../context/theme-provider";
 import { GitHubUserItem } from "../../types/user-types";
 
 export default function UserCard({ user }: { user: GitHubUserItem }) {
-  let colorScheme = useColorScheme();
-  let styles = getStyles(colorScheme);
+  const colorScheme = useColorScheme();
+  const styles = getStyles(colorScheme);
+  const {width} = useWindowDimensions();
 
   return (
     <Link
@@ -20,7 +21,7 @@ export default function UserCard({ user }: { user: GitHubUserItem }) {
         params: { username: user.login },
       }}
     >
-      <View style={styles.wrapper}>
+      <View style={{...styles.wrapper, width: width }}>
         <Image
           source={user?.avatar_url && { uri: user.avatar_url }}
           style={styles.image}
@@ -33,7 +34,7 @@ export default function UserCard({ user }: { user: GitHubUserItem }) {
   );
 }
 
-const getStyles = (theme: ColorSchemeName) =>
+const getStyles = (theme: "light" | "dark") =>
   StyleSheet.create({
     wrapper: {
       flex: 1,
@@ -45,6 +46,7 @@ const getStyles = (theme: ColorSchemeName) =>
       padding: 10,
       borderRadius: 10,
       backgroundColor: theme === "dark" ? "black" : "white",
+
     },
     image: {
       width: 100,
